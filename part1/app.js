@@ -14,23 +14,34 @@ var main = function () {
         commentInput: ko.observable(),
         comments: ko.observableArray(initComment),
 
+        // Function to add comments
+        addComment: function () {
+            var self = this;
+            if (self.commentInput() !== "") {
+                // Add to comments list and clear the input
+                self.comments.push(self.commentInput());
+                self.commentInput("");
+                return false;
+            }
+            return true;
+        },
     };
 
-    var addCommentFromInputBox = function () {
-        var $new_comment;
+    // var addCommentFromInputBox = function () {
+    //     var $new_comment;
+    //
+    //     if ($(".comment-input input").val() !== "") {
+    //         $new_comment = $("<p>").text($(".comment-input input").val());
+    //         $new_comment.hide();
+    //         $(".comments").append($new_comment);
+    //         $new_comment.fadeIn();
+    //         $(".comment-input input").val("");
+    //     }
+    // };
 
-        if ($(".comment-input input").val() !== "") {
-            $new_comment = $("<p>").text($(".comment-input input").val());
-            $new_comment.hide();
-            $(".comments").append($new_comment);
-            $new_comment.fadeIn();
-            $(".comment-input input").val("");
-        }
-    };
-
-    $(".comment-input button").on("click", function (event) {
-        addCommentFromInputBox();
-    });
+    // $(".comment-input button").on("click", function (event) {
+    //     addCommentFromInputBox();
+    // });
 
     $(".comment-input input").on("keypress", function (event) {
         if (event.keyCode === 13) {
