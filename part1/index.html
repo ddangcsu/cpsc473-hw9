@@ -15,7 +15,7 @@
     <main>
       <section class="comment-input">
         <p>Add Your Comment:</p>
-        <input data-bind="textInput: commentInput">
+        <input data-bind="textInput: commentInput, event: {keypress: enterToAdd}">
         <button data-bind="click: addComment">+</button>
       </section>
 

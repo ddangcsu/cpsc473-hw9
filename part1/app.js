@@ -1,3 +1,9 @@
+// Client-side code
+/* jshint browser: true, jquery: true, curly: true, eqeqeq: true, forin: true,
+immed: true, indent: 4, latedef: true, newcap: true, nonew: true, quotmark: double,
+undef: true, unused: true, strict: true, trailing: true */
+/* global ko:true */
+
 var main = function () {
     "use strict";
 
@@ -25,6 +31,16 @@ var main = function () {
             }
             return true;
         },
+
+        // Add function to handle enter keypress to add comment
+        enterToAdd: function (data, event) {
+            var self = this;
+            if (event.keyCode === 13) {
+                self.addComment();
+                return false;
+            }
+            return true;
+        }
     };
 
     // var addCommentFromInputBox = function () {
@@ -43,11 +59,11 @@ var main = function () {
     //     addCommentFromInputBox();
     // });
 
-    $(".comment-input input").on("keypress", function (event) {
-        if (event.keyCode === 13) {
-            addCommentFromInputBox();
-        }
-    });
+    // $(".comment-input input").on("keypress", function (event) {
+    //     if (event.keyCode === 13) {
+    //         addCommentFromInputBox();
+    //     }
+    // });
 
     ko.applyBindings(commentModel);
 };
