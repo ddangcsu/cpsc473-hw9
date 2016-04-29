@@ -1,6 +1,21 @@
 var main = function () {
     "use strict";
 
+    // Var initial array of items from index.html-
+    var initComment = [
+        "This is the first comment!",
+        "Here's the second one!",
+        "And this is one more.",
+        "Here is another one!"
+    ];
+
+    // Define a KO Comment Model
+    var commentModel = {
+        commentInput: ko.observable(),
+        comments: ko.observableArray(initComment),
+
+    };
+
     var addCommentFromInputBox = function () {
         var $new_comment;
 
@@ -22,6 +37,8 @@ var main = function () {
             addCommentFromInputBox();
         }
     });
+
+    ko.applyBindings(commentModel);
 };
 
 $(document).ready(main);
