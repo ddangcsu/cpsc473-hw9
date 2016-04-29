@@ -40,7 +40,8 @@ app.post("/todos", function (req, res) {
         } else {
             // our client expects *all* of the todo items to be returned, so we'll do
             // an additional request to maintain compatibility
-            ToDo.find({}, function (err, result) {
+            var exclude = {_id: 0, __v: 0};
+            ToDo.find({}).select(exclude).exec(function (err, result) {
                 if (err !== null) {
                     // the element did not get saved!
                     res.send("ERROR");

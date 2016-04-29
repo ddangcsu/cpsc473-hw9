@@ -1,0 +1,2 @@
+mongodb: $HOME/mongodb/bin/mongod --dbpath=$HOME/mongodb/data
+hw9_part2: node server.js

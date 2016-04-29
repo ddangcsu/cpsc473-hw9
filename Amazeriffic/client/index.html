@@ -3,8 +3,8 @@
   <head>
     <title>Amazeriffic!</title>
     <link href="stylesheets/style.css" rel="stylesheet" type="text/css">
-    <link href='http://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>
-    <link href='http://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>    
+    <link href="http://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Droid+Sans" rel="stylesheet" type="text/css">
   </head>
 
   <body>
@@ -28,16 +28,38 @@
           <a href=""><span>Tags</span></a>
           <a href=""><span>Add</span></a>
         </div>
-        <div class="content">
-          <ul>
-            <li>Get Groceries</li>
-            <li>Make up some new ToDos</li>
-            <li>Prep for Monday's class</li>
-            <li>Answer recruiter emails on LinkedIn</li>
-            <li>Take Gracie to the park</li>
-            <li>Finish writing book</li>
-          </ul>
-        </div>
+        <span data-bind="with: newestModel">
+          <div class="content" data-bind="visible: visible">
+            <ul data-bind="foreach: newest">
+              <li data-bind="text: $data"></li>
+            </ul>
+          </div>
+        </span>
+        <span data-bind="with: oldestModel">
+          <div class="content" data-bind="visible: visible">
+            <ul data-bind="foreach: oldest">
+              <li data-bind="text: $data"></li>
+            </ul>
+          </div>
+        </span>
+        <span data-bind="with: tagsModel">
+          <div class="content" data-bind="visible: visible">
+            <ul>
+              <li>by tags</li>
+            </ul>
+          </div>
+        </span>
+        <span data-bind="with: addModel">
+          <div class="content" data-bind="visible: visible">
+            <div>
+              <p>Description:</p>
+              <input class="description">
+              <p>Tags:</p>
+              <input class="tags">
+              <span>+</span>
+            </div>
+          </div>
+        </span>
       </div>
     </main>
 
@@ -68,6 +90,8 @@
     </footer>
 
     <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+    <!-- Adding knockout JS CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js"></script>
     <script src="javascripts/app.js"></script>
   </body>
 </html>
