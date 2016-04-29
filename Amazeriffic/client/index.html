@@ -22,43 +22,39 @@
 
     <main>
       <div class="container">
-        <h1 data-bind="text: selectedTab"></h1>
-        <div class="tabs" data-bind="foreach: tabs">
+        <div class="tabs" data-bind="foreach: appModel.tabs">
           <a href=""><span data-bind="text: name"></span></a>
         </div>
         <div class="content" >
-          <div data-bind="ifnot: selectedTab() === 2">
-            <ul data-bind="foreach: selectedContent">
+          <!-- Newest and Oldest Tab -->
+          <div data-bind="if: appModel.selectedTab() < 2">
+            <ul data-bind="foreach: appModel.selectedContent">
               <li data-bind="text: $data"></li>
             </ul>
-          </div>
-        </div>
-
-        <!-- <span data-bind="with: oldestModel">
-          <div class="content" data-bind="visible: visible">
-            <ul data-bind="foreach: oldest">
-              <li data-bind="text: $data"></li>
-            </ul>
-          </div>
-        </span>
-        <span data-bind="with: tagsModel">
-          <div class="content" data-bind="visible: visible">
-            <ul>
-              <li>by tags</li>
-            </ul>
-          </div>
-        </span>
-        <span data-bind="with: addModel">
-          <div class="content" data-bind="visible: visible">
-            <div>
-              <p>Description:</p>
-              <input class="description">
-              <p>Tags:</p>
-              <input class="tags">
-              <span>+</span>
+          </div> <!-- For Newest and Oldest Tab -->
+          <!-- Tags Tab -->
+          <div data-bind="if: appModel.selectedTab() === 2">
+            <div data-bind="foreach: appModel.selectedContent">
+              <h3 data-bind="text: name"></h3>
+              <ul data-bind="foreach: toDos">
+                <li data-bind="text: $data"></li>
+              </ul>
             </div>
-          </div>
-        </span> -->
+          </div> <!-- End of Tags Tab -->
+
+          <!-- Div for add Tab -->
+          <div data-bind="if: appModel.selectedTab() === 3">
+            <div data-bind="with: addModel">
+             <p>Description:</p>
+              <input class="description" data-bind="textInput: description">
+              <p>Tags:</p>
+              <input class="tags" data-bind="textInput: tags">
+              <span data-bind="click: add">+</span>
+            </div>
+          </div> <!-- End of DIV for Add Tab -->
+
+        </div> <!-- End of Content -->
+
       </div>
     </main>
 

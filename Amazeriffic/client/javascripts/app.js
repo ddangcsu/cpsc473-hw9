@@ -43,233 +43,116 @@ var main = function (toDoObjects) {
     };
 
     // Define KO Model
+    var Model = {};
 
     var newestTab = {
         name: "Newest",
-        contents: ko.observableArray(getToDos()).reverse(),
-        update: function (newContent) {
+        contents: ko.observableArray(getToDos().reverse()),
+        update: function () {
             var self = this;
             // newContent is a description string
-            self.contents.push(newContent);
+            self.contents(getToDos().reverse());
         }
     };
 
     var oldestTab = {
         name: "Oldest",
         contents: ko.observableArray(getToDos()),
-        update: function (newContent) {
+        update: function () {
             var self = this;
             // newContent is a description string
-            self.contents.push(newContent);
+            self.contents(getToDos());
         }
     };
 
     var tagsTab = {
         name: "Tags",
         contents: ko.observableArray(organizedByTags()),
-        update: function (newContent) {
+        update: function () {
             var self = this;
             // newContent is a description string
-            self.contents.push(newContent);
+            self.contents(organizedByTags());
         }
     };
 
     var addTab = {
         name: "Add",
-        contents: ko.observableArray(getToDos()),
-        update: function (newContent) {
-            var self = this;
-            // newContent is a description string
-            self.contents.push(newContent);
-        }
     };
 
-    var appModel = {
+    Model.appModel = {
         selectedTab: ko.observable(0),
-        tabs: ko.observableArray([
+        tabs: [
             newestTab, // Index 0
             oldestTab, // Index 1
             tagsTab, // Index 2
             addTab,  // Index 3
-        ]),
+        ],
     };
 
-    appModel.selectedContent = ko.pureComputed(function(){
+    Model.appModel.selectedContent = ko.pureComputed(function(){
         var self = this;
         //console.log(self.tabs());
         //console.log(self.selectedTab());
-        return self.tabs()[self.selectedTab()].contents();
-    }, appModel);
+        if (self.selectedTab() === 3) {
+            return null;
+        } else {
+            return self.tabs[self.selectedTab()].contents();
+        }
+    }, Model.appModel);
 
-    // var Model = {};
-    //
-    // Model.newestModel = {
-    //     visible: ko.observable(false),
-    //     newest: ko.observableArray(getToDos()).reverse(),
-    // };
-    //
-    // Model.oldestModel = {
-    //     visible: ko.observable(false),
-    //     oldest: ko.observableArray(getToDos()),
-    // };
-    //
-    // Model.tagsModel = {
-    //     visible: ko.observable(false),
-    // };
-    //
-    // Model.addModel = {
-    //     visible: ko.observable(false),
-    //     description: ko.observable(),
-    //     tags: ko.observable(),
-    //
-    //     // Function click to add
-    //     add: function () {
-    //         var self = this;
-    //         var description = self.description(),
-    //             tags = self.tags.split(","),
-    //             newToDo = {"description":description, "tags":tags};
-    //
-    //         $.post("todos", newToDo, function (result) {
-    //             console.log(result);
-    //
-    //             //toDoObjects.push(newToDo);
-    //             toDoObjects = result;
-    //
-    //             // update toDos
-    //             toDos = toDoObjects.map(function (toDo) {
-    //                 return toDo.description;
-    //             });
-    //
-    //             self.description("");
-    //             self.tags("");
-    //         });
-    //     },
-    // };
+    Model.addModel = {
+        visible: ko.observable(false),
+        description: ko.observable(),
+        tags: ko.observable(),
 
-    ko.applyBindings(appModel);
+        // Function click to add
+        add: function () {
+            var self = this;
+            var description = self.description(),
+                tags = self.tags().split(","),
+                newToDo = {"description":description, "tags":tags};
+
+            $.post("todos", newToDo, function (result) {
+                console.log(result);
+
+                toDoObjects = result;
+                newestTab.update();
+                oldestTab.update();
+                tagsTab.update();
+                self.description("");
+                self.tags("");
+
+                $(".tabs a:first-child span").trigger("click");
+            });
+        },
+    };
+
+    //ko.applyBindings(appModel);
+    ko.applyBindings(Model);
 
     $(".tabs a span").toArray().forEach(function (element) {
         var $element = $(element);
 
         // create a click handler for this element
         $element.on("click", function () {
-            // var $content,
-            //     i;
+            var index;
 
             $(".tabs a span").removeClass("active");
             $element.addClass("active");
-            //$("main .content").empty();
 
             if ($element.parent().is(":nth-child(1)")) {
-                appModel.selectedTab(0);
-                // $content = $("<ul>");
-                // for (i = toDos.length-1; i >= 0; i--) {
-                //     $content.append($("<li>").text(toDos[i]));
-                // }
-                // Model.newestModel.visible(true);
-                // Model.oldestModel.visible(false);
-                // Model.tagsModel.visible(false);
-                // Model.addModel.visible(false);
+                index = 0;
 
             } else if ($element.parent().is(":nth-child(2)")) {
-                appModel.selectedTab(1);
-                // $content = $("<ul>");
-                // toDos.forEach(function (todo) {
-                //     $content.append($("<li>").text(todo));
-                // });
-                // Model.newestModel.visible(false);
-                // Model.oldestModel.visible(true);
-                // Model.tagsModel.visible(false);
-                // Model.addModel.visible(false);
+                index = 1;
 
             } else if ($element.parent().is(":nth-child(3)")) {
-                appModel.selectedTab(2);
-                // Model.newestModel.visible(false);
-                // Model.oldestModel.visible(false);
-                // Model.tagsModel.visible(true);
-                // Model.addModel.visible(false);
-
-                // var tags = [];
-                //
-                // toDoObjects.forEach(function (toDo) {
-                //     toDo.tags.forEach(function (tag) {
-                //         if (tags.indexOf(tag) === -1) {
-                //             tags.push(tag);
-                //         }
-                //     });
-                // });
-                // console.log(tags);
-                //
-                // var tagObjects = tags.map(function (tag) {
-                //     var toDosWithTag = [];
-                //
-                //     toDoObjects.forEach(function (toDo) {
-                //         if (toDo.tags.indexOf(tag) !== -1) {
-                //             toDosWithTag.push(toDo.description);
-                //         }
-                //     });
-                //
-                //     return { "name": tag, "toDos": toDosWithTag };
-                // });
-                //
-                // console.log(tagObjects);
-                //
-                // tagObjects.forEach(function (tag) {
-                //     var $tagName = $("<h3>").text(tag.name),
-                //         $content = $("<ul>");
-                //
-                //
-                //     tag.toDos.forEach(function (description) {
-                //         var $li = $("<li>").text(description);
-                //         $content.append($li);
-                //     });
-                //
-                //     $("main .content").append($tagName);
-                //     $("main .content").append($content);
-                // });
+                index = 2;
 
             } else if ($element.parent().is(":nth-child(4)")) {
-                appModel.selectedTab(3);
-                // Model.newestModel.visible(false);
-                // Model.oldestModel.visible(false);
-                // Model.tagsModel.visible(false);
-                // Model.addModel.visible(true);
-                // var $input = $("<input>").addClass("description"),
-                //     $inputLabel = $("<p>").text("Description: "),
-                //     $tagInput = $("<input>").addClass("tags"),
-                //     $tagLabel = $("<p>").text("Tags: "),
-                //     $button = $("<span>").text("+");
-                //
-                // $button.on("click", function () {
-                //     var description = $input.val(),
-                //         tags = $tagInput.val().split(","),
-                //         newToDo = {"description":description, "tags":tags};
-                //
-                //     $.post("todos", newToDo, function (result) {
-                //         console.log(result);
-                //
-                //         //toDoObjects.push(newToDo);
-                //         toDoObjects = result;
-                //
-                //         // update toDos
-                //         toDos = toDoObjects.map(function (toDo) {
-                //             return toDo.description;
-                //         });
-                //
-                //         $input.val("");
-                //         $tagInput.val("");
-                //     });
-                // });
-                //
-                // $content = $("<div>").append($inputLabel)
-                //                      .append($input)
-                //                      .append($tagLabel)
-                //                      .append($tagInput)
-                //                      .append($button);
+                index = 3;
             }
-
-            //$("main .content").append($content);
-
+            Model.appModel.selectedTab(index);
             return false;
         });
     });
