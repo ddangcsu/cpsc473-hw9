@@ -7,6 +7,8 @@ undef: true, unused: true, strict: true, trailing: true */
 var main = function (toDoObjects) {
     "use strict";
     console.log("SANITY CHECK");
+
+    // Turn the toDoObject map to function
     var getToDos = function() {
         var toDos = toDoObjects.map(function (toDo) {
             // we'll just return the description
@@ -45,6 +47,7 @@ var main = function (toDoObjects) {
     // Define KO Model
     var Model = {};
 
+    // Define a Model to handle newest Tab
     var newestTab = {
         name: "Newest",
         contents: ko.observableArray(getToDos().reverse()),
@@ -55,6 +58,7 @@ var main = function (toDoObjects) {
         }
     };
 
+    // Define a Model to handle oldest Tab
     var oldestTab = {
         name: "Oldest",
         contents: ko.observableArray(getToDos()),
@@ -65,6 +69,7 @@ var main = function (toDoObjects) {
         }
     };
 
+    // Define a Model to handle tags Tab
     var tagsTab = {
         name: "Tags",
         contents: ko.observableArray(organizedByTags()),
@@ -75,10 +80,12 @@ var main = function (toDoObjects) {
         }
     };
 
+    // Define a Model to handle newest Tab
     var addTab = {
         name: "Add",
     };
 
+    // Define the main app model
     Model.appModel = {
         selectedTab: ko.observable(0),
         tabs: [
@@ -89,6 +96,8 @@ var main = function (toDoObjects) {
         ],
     };
 
+    // Define a computed KO that will select the content of each tab (except)
+    // add Tab to populate the content on tab selected
     Model.appModel.selectedContent = ko.pureComputed(function(){
         var self = this;
         //console.log(self.tabs());
@@ -100,30 +109,34 @@ var main = function (toDoObjects) {
         }
     }, Model.appModel);
 
+    // Separate model to handle the add Tab
     Model.addModel = {
-        visible: ko.observable(false),
         description: ko.observable(),
         tags: ko.observable(),
 
         // Function click to add
         add: function () {
             var self = this;
-            var description = self.description(),
-                tags = self.tags().split(","),
-                newToDo = {"description":description, "tags":tags};
+            if (self.description() && self.tags()) {
+                var description = self.description(),
+                    tags = self.tags().split(","),
+                    newToDo = {"description":description, "tags":tags};
 
-            $.post("todos", newToDo, function (result) {
-                console.log(result);
+                $.post("todos", newToDo, function (result) {
+                    console.log(result);
 
-                toDoObjects = result;
-                newestTab.update();
-                oldestTab.update();
-                tagsTab.update();
-                self.description("");
-                self.tags("");
+                    toDoObjects = result;
+                    newestTab.update();
+                    oldestTab.update();
+                    tagsTab.update();
+                    self.description("");
+                    self.tags("");
 
-                $(".tabs a:first-child span").trigger("click");
-            });
+                    $(".tabs a:first-child span").trigger("click");
+                });
+                return false;
+            }
+            return true;
         },
     };
 
