@@ -9,8 +9,8 @@ var main = function (toDoObjects) {
     console.log("SANITY CHECK");
 
     // Turn the toDoObject map to function
-    var getToDos = function() {
-        var toDos = toDoObjects.map(function (toDo) {
+    var getToDos = function(objects) {
+        var toDos = objects.map(function (toDo) {
             // we'll just return the description
             // of this toDoObject
             return toDo.description;
@@ -19,10 +19,10 @@ var main = function (toDoObjects) {
     };
 
     // Turn the organizedByTags into a function return
-    var organizedByTags = function () {
+    var organizedByTags = function (objects) {
         var tags = [];
 
-        toDoObjects.forEach(function (toDo) {
+        objects.forEach(function (toDo) {
             toDo.tags.forEach(function (tag) {
                 if (tags.indexOf(tag) === -1) {
                     tags.push(tag);
@@ -32,7 +32,7 @@ var main = function (toDoObjects) {
         var tagObjects = tags.map(function (tag) {
             var toDosWithTag = [];
 
-            toDoObjects.forEach(function (toDo) {
+            objects.forEach(function (toDo) {
                 if (toDo.tags.indexOf(tag) !== -1) {
                     toDosWithTag.push(toDo.description);
                 }
@@ -49,68 +49,35 @@ var main = function (toDoObjects) {
 
     // Define a Model to handle newest Tab
     var newestTab = {
-        name: "Newest",
-        contents: ko.observableArray(getToDos().reverse()),
-        update: function () {
+        contents: ko.observableArray(getToDos(toDoObjects).reverse()),
+        update: function (newToDo) {
             var self = this;
-            // newContent is a description string
-            self.contents(getToDos().reverse());
+            self.contents.unshift(newToDo.description);
         }
     };
 
     // Define a Model to handle oldest Tab
     var oldestTab = {
-        name: "Oldest",
-        contents: ko.observableArray(getToDos()),
-        update: function () {
+        contents: ko.observableArray(getToDos(toDoObjects)),
+        update: function (newToDo) {
             var self = this;
-            // newContent is a description string
-            self.contents(getToDos());
+            self.contents.push(newToDo.description);
         }
     };
 
     // Define a Model to handle tags Tab
     var tagsTab = {
-        name: "Tags",
-        contents: ko.observableArray(organizedByTags()),
+        contents: ko.observableArray(organizedByTags(toDoObjects)),
         update: function () {
             var self = this;
-            // newContent is a description string
-            self.contents(organizedByTags());
+            // Since it's more complicated to add an organized by tags objects
+            // we just refresh the entire contents
+            self.contents(organizedByTags(toDoObjects));
         }
     };
-
-    // Define a Model to handle newest Tab
-    var addTab = {
-        name: "Add",
-    };
-
-    // Define the main app model
-    Model.appModel = {
-        selectedTab: ko.observable(0),
-        tabs: [
-            newestTab, // Index 0
-            oldestTab, // Index 1
-            tagsTab, // Index 2
-            addTab,  // Index 3
-        ],
-    };
-
-    // Define a computed KO that will select the content of each tab (except)
-    // add Tab to populate the content on tab selected
-    Model.appModel.selectedContent = ko.pureComputed(function(){
-        var self = this;
-        //console.log(self.tabs());
-        //console.log(self.selectedTab());
-        if (self.selectedTab() === 3) {
-            return null;
-        } else {
-            return self.tabs[self.selectedTab()].contents();
-        }
-    }, Model.appModel);
 
     // Separate model to handle the add Tab
-    Model.addModel = {
+    var addTab = {
         description: ko.observable(),
         tags: ko.observable(),
 
@@ -124,20 +91,36 @@ var main = function (toDoObjects) {
 
                 $.post("todos", newToDo, function (result) {
                     console.log(result);
+                    // Update the list of ToDoObjects
+                    toDoObjects.push(newToDo);
 
-                    toDoObjects = result;
-                    newestTab.update();
-                    oldestTab.update();
+                    // Update all the 3 models to reflect the changes
+                    newestTab.update(newToDo);
+                    oldestTab.update(newToDo);
                     tagsTab.update();
+
+                    // Clear the data in the add Model
                     self.description("");
                     self.tags("");
 
+                    // Redirect to first tab
                     $(".tabs a:first-child span").trigger("click");
                 });
                 return false;
             }
             return true;
         },
+    };
+
+    // Define the main app model
+    Model.appModel = {
+        selectedTab: ko.observable(0),
+        tabs: ["Newest", "Oldest", "Tags", "Add"],
+        // Linking all the sub Models to this main model
+        newestTab: newestTab,
+        oldestTab: oldestTab,
+        tagsTab: tagsTab,
+        addTab: addTab,
     };
 
     //ko.applyBindings(appModel);

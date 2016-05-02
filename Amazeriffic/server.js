@@ -38,16 +38,7 @@ app.post("/todos", function (req, res) {
             console.log(err);
             res.send("ERROR");
         } else {
-            // our client expects *all* of the todo items to be returned, so we'll do
-            // an additional request to maintain compatibility
-            var exclude = {_id: 0, __v: 0};
-            ToDo.find({}).select(exclude).exec(function (err, result) {
-                if (err !== null) {
-                    // the element did not get saved!
-                    res.send("ERROR");
-                }
-                res.json(result);
-            });
+            res.json(result);
         }
     });
 });

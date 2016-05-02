@@ -23,28 +23,40 @@
     <main>
       <div class="container">
         <div class="tabs" data-bind="foreach: appModel.tabs">
-          <a href=""><span data-bind="text: name"></span></a>
+          <a href=""><span data-bind="text: $data"></span></a>
         </div>
         <div class="content" >
-          <!-- Newest and Oldest Tab -->
-          <div data-bind="if: appModel.selectedTab() < 2">
-            <ul data-bind="foreach: appModel.selectedContent">
-              <li data-bind="text: $data"></li>
-            </ul>
-          </div> <!-- For Newest and Oldest Tab -->
-          <!-- Tags Tab -->
-          <div data-bind="if: appModel.selectedTab() === 2">
-            <div data-bind="foreach: appModel.selectedContent">
-              <h3 data-bind="text: name"></h3>
-              <ul data-bind="foreach: toDos">
+          <!-- Newest Tab -->
+          <div data-bind="if: appModel.selectedTab() === 0">
+            <div data-bind="with: appModel.newestTab">
+              <ul data-bind="foreach: contents">
                 <li data-bind="text: $data"></li>
               </ul>
+            </div>
+          </div> <!-- For Newest Tab -->
+          <!-- Oldest Tab -->
+          <div data-bind="if: appModel.selectedTab() === 1">
+            <div data-bind="with: appModel.oldestTab">
+              <ul data-bind="foreach: contents">
+                <li data-bind="text: $data"></li>
+              </ul>
+            </div>
+          </div> <!-- For Oldest Tab -->
+          <!-- Tags Tab -->
+          <div data-bind="if: appModel.selectedTab() === 2">
+            <div data-bind="with: appModel.tagsTab">
+              <div data-bind="foreach: contents">
+                <h3 data-bind="text: name"></h3>
+                <ul data-bind="foreach: toDos">
+                  <li data-bind="text: $data"></li>
+                </ul>
+              </div>
             </div>
           </div> <!-- End of Tags Tab -->
 
           <!-- Div for add Tab -->
           <div data-bind="if: appModel.selectedTab() === 3">
-            <div data-bind="with: addModel">
+            <div data-bind="with: appModel.addTab">
              <p>Description:</p>
               <input class="description" data-bind="textInput: description">
               <p>Tags:</p>
@@ -84,7 +96,7 @@
       </div>
     </footer>
 
-    <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+    <script src="http://code.jquery.com/jquery-2.2.3.min.js"></script>
     <!-- Adding knockout JS CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js"></script>
     <script src="javascripts/app.js"></script>
