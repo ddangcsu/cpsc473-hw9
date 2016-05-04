@@ -1,3 +1,8 @@
+/* jshint curly: true, eqeqeq: true, forin: true, immed: true,
+ indent: 4, latedef: true, newcap: true, nonew: true, quotmark: double,
+ undef: true, unused: true, strict: true, trailing: true, node: true */
+
+"use strict";
 var express = require("express"),
     http = require("http"),
     // import the mongoose library
@@ -10,7 +15,7 @@ app.use(parser.urlencoded({extended: true}));
 
 
 // connect to the amazeriffic data store in mongo
-mongoose.connect('mongodb://localhost/amazeriffic');
+mongoose.connect("mongodb://localhost/amazeriffic");
 
 // This is our mongoose model for todos
 var ToDoSchema = mongoose.Schema({
